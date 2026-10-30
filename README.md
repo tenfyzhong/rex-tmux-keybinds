@@ -88,3 +88,8 @@ Tests compare the full default mode/binding map with the original migration
 fixture and check custom-prefix propagation, invalid options and import safety.
 The fixture is frozen historical input; do not update it to match implementation
 changes. Run `rex config check` and reload for native integration verification.
+
+The GitHub Actions `Tests` workflow runs the unit suite on Lua 5.1 and LuaJIT
+for pushes and pull requests, and can also be started manually. Native Rex
+configuration checks and keyboard interactions require a local Rex installation
+and are not run by CI.
