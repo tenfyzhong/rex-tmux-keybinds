@@ -68,4 +68,51 @@ function TestBindings:testInvalidOptionsFailBeforeRegistration()
     end
 end
 
+local function assertPrefixWorks(prefix)
+    local actual = capture(function() require('rex-tmux-keybinds').setup({ prefix = prefix }) end)
+    lu.assertEquals(actual.bindings[prefix], {
+        action = 'client.mode.enter', args = { name = 'prefix', once = true },
+    }, prefix)
+    lu.assertEquals(actual.bindings['terminal/' .. prefix], {
+        action = 'client.mode.enter', args = { name = 'terminal_prefix', once = true },
+    }, prefix)
+    for _, mode in ipairs({ 'prefix', 'terminal_prefix' }) do
+        for _, key in ipairs({ prefix, 'ctrl+a' }) do
+            lu.assertEquals(actual.bindings[mode .. '/' .. key], {
+                action = 'pane.send_key', args = { key = prefix },
+            }, prefix)
+        end
+    end
+    lu.assertEquals(actual.bindings['prefix/t'].action, 'client.mode.enter')
+    lu.assertEquals(actual.bindings['terminal_prefix/t'].action, 'client.mode.exit_all')
+end
+
+function TestBindings:testPrefixOverridesGlobalBindings()
+    for _, prefix in ipairs({ 'ctrl+h', 'ctrl+j', 'ctrl+k', 'ctrl+l', 'ctrl+enter' }) do
+        assertPrefixWorks(prefix)
+    end
+end
+
+function TestBindings:testPrefixOverridesCommandBindings()
+    local original = capture(function() dofile('tests/fixtures/original-keybindings.lua') end)
+    for key in pairs(original.bindings) do
+        local prefix = key:match('^prefix/(.+)$')
+        -- Sequences are not single-chord prefixes; t is reserved for mode switching.
+        if prefix and prefix ~= 't' and not prefix:find('=>', 1, true) then
+            assertPrefixWorks(prefix)
+        end
+    end
+end
+
+function TestBindings:testTerminalTogglePrefixRejectedBeforeRegistration()
+    for _, prefix in ipairs({ 't', 'T' }) do
+        local actual = capture(function()
+            lu.assertErrorMsgContains('reserved for terminal mode', function()
+                require('rex-tmux-keybinds').setup({ prefix = prefix })
+            end)
+        end)
+        lu.assertEquals(actual, { modes = {}, bindings = {} })
+    end
+end
+
 os.exit(lu.LuaUnit.run())

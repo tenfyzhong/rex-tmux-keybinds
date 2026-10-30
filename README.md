@@ -26,6 +26,13 @@ binding or a multi-step sequence; Rex validates the key syntax at config load.
 The entry key, terminal-mode entry key, double-prefix passthrough and
 `P Ctrl+a` passthrough all use the configured value.
 
+The configured prefix takes precedence over conflicting built-in bindings. For
+example, `ctrl+h` becomes the prefix instead of global left-pane navigation,
+and with prefix `c`, `P c` sends `c` instead of creating a tab. The same
+passthrough precedence applies in terminal mode. The bare key `t` (case
+insensitive) is rejected before any registration because `P t` must remain
+available to enter and exit terminal mode.
+
 Register during `init`: modes and bindings must exist at configuration load.
 Requiring the module itself has no side effects. Call `setup` once per config
 load; reload Rex to change options. The plugin owns the `prefix`, `resize`,

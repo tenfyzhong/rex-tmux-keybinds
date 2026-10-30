@@ -9,14 +9,13 @@ function M.setup(options)
     assert(type(prefix) == "string" and prefix:match("%S"),
         "rex-tmux-keybinds: prefix must be a nonblank key string")
 
+    assert(prefix:lower() ~= "t",
+        "rex-tmux-keybinds: prefix t is reserved for terminal mode")
+
     rex.mode("prefix", { exclusive = true })
-    rex.bind(prefix, "client.mode.enter", { name = "prefix", once = true })
     -- Uppercase keys must be written with shift+.
     -- See README.md for configuration and compatibility limits.
 
-    -- Prefix passthrough (the old rmux Ctrl+S, Ctrl+A binding).
-    rex.bind("prefix/ctrl+a", "pane.send_key", { key = prefix })
-    rex.bind("prefix/" .. prefix, "pane.send_key", { key = prefix })
     rex.bind("ctrl+enter", "pane.send_key", { key = "ctrl+j" })
     rex.bind("prefix/r", "client.config.reload")
 
@@ -135,6 +134,12 @@ function M.setup(options)
     rex.bind("prefix/shift+/", "client.shortcuts.edit") -- ?
     rex.bind("prefix/pageup", "client.prompt.previous")
     rex.bind("prefix/pagedown", "client.prompt.next")
+
+    -- The configured prefix takes precedence over fixed navigation/command keys.
+    -- Apply passthrough before copying the map into terminal_prefix.
+    rex.bind(prefix, "client.mode.enter", { name = "prefix", once = true })
+    rex.bind("prefix/ctrl+a", "pane.send_key", { key = prefix })
+    rex.bind("prefix/" .. prefix, "pane.send_key", { key = prefix })
 
     -- A terminal-specific prefix keeps all prefix commands available while making
     -- P t exit terminal mode. Copy the shared bindings instead of maintaining two
