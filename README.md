@@ -27,7 +27,7 @@ The entry key, terminal-mode entry key, double-prefix passthrough and
 `P Ctrl+a` passthrough all use the configured value.
 
 The configured prefix takes precedence over conflicting built-in bindings. For
-example, `ctrl+h` becomes the prefix instead of global left-pane navigation,
+example, `ctrl+enter` becomes the prefix instead of sending Ctrl+J,
 and with prefix `c`, `P c` sends `c` instead of creating a tab. The same
 passthrough precedence applies in terminal mode. The bare key `t` (case
 insensitive) is rejected before any registration because `P t` must remain
@@ -57,7 +57,7 @@ Shift. Escape cancels the one-shot prefix. Rex's native Cmd shortcuts remain.
 | `P Alt+h/l` | Move tab backward/forward |
 | `P N`, `P s`, `P $`, `P (` / `P )` | New, switch, rename, previous/next session |
 | `P \` / `P %`, `P -` / `P "` | Split right, split down |
-| `P h/j/k/l`, `P arrows`, `Ctrl+h/j/k/l` | Focus pane |
+| `P h/j/k/l`, `P arrows` | Focus pane |
 | `P o/O`, `P z`, `P x`, `P !` | Next/previous pane, zoom, close, move to new tab |
 | `P H/J/K/L`, `P Ctrl+arrows` | Resize by 2 percentage points |
 | `P {` / `P }`, `P Alt+arrows` | Move pane |
