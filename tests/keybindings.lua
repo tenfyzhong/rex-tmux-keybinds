@@ -34,8 +34,18 @@ end
 
 function TestBindings:testOriginalParity()
     local expected = capture(function() dofile('tests/fixtures/original-keybindings.lua') end)
+    for _, key in ipairs({ 'ctrl+h', 'ctrl+j', 'ctrl+k', 'ctrl+l' }) do
+        expected.bindings[key] = nil
+    end
     local actual = capture(function() require('rex-tmux-keybinds').setup() end)
     lu.assertEquals(actual, expected)
+end
+
+function TestBindings:testNoGlobalPaneNavigation()
+    local actual = capture(function() require('rex-tmux-keybinds').setup() end)
+    for _, key in ipairs({ 'ctrl+h', 'ctrl+j', 'ctrl+k', 'ctrl+l' }) do
+        lu.assertNil(actual.bindings[key], key)
+    end
 end
 
 function TestBindings:testCustomPrefix()
