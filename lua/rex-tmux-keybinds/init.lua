@@ -2,21 +2,22 @@ local M = {}
 
 -- Call once per configuration load, from the rexpack spec's init callback.
 function M.setup(options)
-    if options == nil then options = {} end
+    if options == nil then
+        options = {}
+    end
     assert(type(options) == "table", "rex-tmux-keybinds: options must be a table")
     local prefix = options.prefix
-    if prefix == nil then prefix = "ctrl+s" end
-    assert(type(prefix) == "string" and prefix:match("%S"),
-        "rex-tmux-keybinds: prefix must be a nonblank key string")
+    if prefix == nil then
+        prefix = "ctrl+s"
+    end
+    assert(type(prefix) == "string" and prefix:match("%S"), "rex-tmux-keybinds: prefix must be a nonblank key string")
 
-    assert(prefix:lower() ~= "t",
-        "rex-tmux-keybinds: prefix t is reserved for terminal mode")
+    assert(prefix:lower() ~= "t", "rex-tmux-keybinds: prefix t is reserved for terminal mode")
 
     rex.mode("prefix", { exclusive = true })
     -- Uppercase keys must be written with shift+.
     -- See README.md for configuration and compatibility limits.
 
-    rex.bind("ctrl+enter", "pane.send_key", { key = "ctrl+j" })
     rex.bind("prefix/r", "client.config.reload")
 
     -- Windows in tmux correspond to Rex tabs. Display numbers start at 0; Rex API positions start at 1.
@@ -141,7 +142,7 @@ function M.setup(options)
     -- P t exit terminal mode. Copy the shared bindings instead of maintaining two
     -- lists. The one-shot prefix is popped by Rex before its action performs.
     rex.mode("terminal_prefix", { exclusive = true })
-    for _, binding in ipairs(rex.bindings{ mode = "prefix" }) do
+    for _, binding in ipairs(rex.bindings({ mode = "prefix" })) do
         if binding.key ~= "t" then
             rex.bind("terminal_prefix/" .. binding.key, binding.action, binding.args)
         end
