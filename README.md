@@ -26,12 +26,11 @@ binding or a multi-step sequence; Rex validates the key syntax at config load.
 The entry key, terminal-mode entry key, double-prefix passthrough and
 `P Ctrl+a` passthrough all use the configured value.
 
-The configured prefix takes precedence over conflicting built-in bindings. For
-example, `ctrl+enter` becomes the prefix instead of sending Ctrl+J,
-and with prefix `c`, `P c` sends `c` instead of creating a tab. The same
-passthrough precedence applies in terminal mode. The bare key `t` (case
-insensitive) is rejected before any registration because `P t` must remain
-available to enter and exit terminal mode.
+The configured prefix takes precedence over conflicting plugin bindings. With
+prefix `c`, `P c` sends `c` to the terminal. The same passthrough precedence
+applies in terminal mode. The bare key `t` (case insensitive) is rejected
+before any registration because `P t` must remain available to enter and exit
+terminal mode.
 
 Register during `init`: modes and bindings must exist at configuration load.
 Requiring the module itself has no side effects. Call `setup` once per config
@@ -65,7 +64,7 @@ Shift. Escape cancels the one-shot prefix. Rex's native Cmd shortcuts remain.
 | `P R` | Enter persistent resize mode |
 | `P t` | Enter/exit terminal passthrough mode |
 | `P Ctrl+a`, `P P` | Send the configured prefix to the terminal |
-| `Ctrl+Enter` | Send Ctrl+J |
+| `P [` | Enter Rex Copy Mode |
 | `P r`, `P /`, `P :`, `P ?` | Reload, find, palette, shortcut editor |
 | `P PageUp/PageDown` | Previous/next shell prompt (requires shell integration) |
 
@@ -77,9 +76,12 @@ Prefix navigation remains available; `P t` exits. This is manual switching,
 without foreground-process detection. Terminal-prefix bindings reuse the
 prefix map, except `t` exits all modes.
 
+In Copy Mode, press Space to start a character selection, move the cursor to
+extend it, and press `y` or Enter to copy it.
+
 This plugin provides native Rex actions, not a tmux command interpreter.
-It does not implement vi copy mode, tmux buffers, detach, synchronized input,
-URL/agent pickers or status bars. Fastcopy is a separate plugin.
+It does not implement tmux buffers, detach, synchronized input, URL/agent
+pickers or status bars. Fastcopy is a separate plugin.
 
 ## Tests
 

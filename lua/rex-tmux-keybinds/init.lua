@@ -125,7 +125,9 @@ function M.setup(options)
     rex.bind("terminal/ctrl+l", "pane.send_key", { key = "ctrl+l" })
     rex.bind("terminal/escape", "pane.send_key", { key = "escape" })
 
-    -- Native alternatives, not tmux copy-mode or a tmux command interpreter.
+    -- Native Rex actions for copy mode, search, and command navigation.
+    rex.bind("prefix/[", "pane.copy_mode.enter")
+    rex.bind("copy/space", "pane.copy_mode.select", { mode = "char" })
     rex.bind("prefix//", "client.find.open")
     rex.bind("prefix/shift+;", "client.palette.toggle") -- :
     rex.bind("prefix/shift+/", "client.shortcuts.edit") -- ?

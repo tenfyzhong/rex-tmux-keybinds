@@ -34,9 +34,13 @@ end
 
 function TestBindings:testOriginalParity()
     local expected = capture(function() dofile('tests/fixtures/original-keybindings.lua') end)
-    for _, key in ipairs({ 'ctrl+h', 'ctrl+j', 'ctrl+k', 'ctrl+l' }) do
+    for _, key in ipairs({ 'ctrl+h', 'ctrl+j', 'ctrl+k', 'ctrl+l', 'ctrl+enter' }) do
         expected.bindings[key] = nil
     end
+    for _, mode in ipairs({ 'prefix', 'terminal_prefix' }) do
+        expected.bindings[mode .. '/['] = { action = 'pane.copy_mode.enter' }
+    end
+    expected.bindings['copy/space'] = { action = 'pane.copy_mode.select', args = { mode = 'char' } }
     local actual = capture(function() require('rex-tmux-keybinds').setup() end)
     lu.assertEquals(actual, expected)
 end
@@ -55,7 +59,9 @@ function TestBindings:testCustomPrefix()
     })
     lu.assertNil(actual.bindings['ctrl+s'])
     lu.assertNil(actual.bindings['prefix/ctrl+s'])
+    lu.assertEquals(actual.bindings['copy/space'], { action = 'pane.copy_mode.select', args = { mode = 'char' } })
     for _, mode in ipairs({ 'prefix', 'terminal_prefix' }) do
+        lu.assertEquals(actual.bindings[mode .. '/['], { action = 'pane.copy_mode.enter' })
         for _, key in ipairs({ 'ctrl+a', 'ctrl+b' }) do
             lu.assertEquals(actual.bindings[mode .. '/' .. key], {
                 action = 'pane.send_key', args = { key = 'ctrl+b' },
@@ -104,6 +110,7 @@ function TestBindings:testPrefixOverridesGlobalBindings()
 end
 
 function TestBindings:testPrefixOverridesCommandBindings()
+    assertPrefixWorks('[')
     local original = capture(function() dofile('tests/fixtures/original-keybindings.lua') end)
     for key in pairs(original.bindings) do
         local prefix = key:match('^prefix/(.+)$')
